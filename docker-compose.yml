@@ -1,0 +1,40 @@
+version: "3.7"
+
+services:
+
+  aio:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: v2-aio
+    ports:
+      - 9000:8000
+    volumes:
+      - ./bricks:/usr/src/api
+
+#   pgdb_aio:
+
+#     restart: always
+#     build:
+#       context: ./pgdb
+#       dockerfile: Dockerfile-PostgreSQL
+#     container_name: v2-db-aio
+#     environment:
+#       POSTGRES_DB: postgres
+#       POSTGRES_USER: aio
+#       POSTGRES_PASSWORD: ${PWD_AIO}
+#     volumes:
+#       - pgdb_aio:/var/lib/postgresql/data
+#       # - ./pgdb/control:/control
+#     ports:
+#       - 10001:5432
+
+# volumes:
+#   pgdb_aio:
+
+networks:
+  default:
+    external:
+      name: $NETWORK
+
