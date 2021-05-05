@@ -11,16 +11,14 @@ import matplotlib.pyplot as plt
 async def _tick_(request):
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get('http://51.15.17.205:9000/tick/Mohamed') as response:
+            async with session.get('http://51.15.17.205:9000/tick/lebonflo') as response:
 
                 json = await response.json()
 
                 transport = AIOHTTPTransport(url="https://dbschool.alcyone.life/graphql")
 
-                # Create a GraphQL client using the defined transport
                 async with Client( transport=transport, fetch_schema_from_transport=True, ) as session:
                     for value in json['data']:
-                        # Execute single query
                         query = gql(
                             """
                                 mutation {
@@ -38,20 +36,19 @@ async def _tick_(request):
                         print(result)
 #
                 return aiohttp.web.json_response(dict(json=json))
-        # Select your transport with a defined url endpoint
 
 
-    # $>
     except Exception as exp:
-    # <!
-        # !0 return what's wrong in string and the type of the exception should be enough to understand where you're wrong noobs
         return aiohttp.web.json_response({'err':{'str':str(exp),'typ':str(type(exp))}}, status=500)
-#`< - - - - - - - - - - - -
+
+
+
+
 async def tick_all(request):
     try:
 
         async with aiohttp.ClientSession() as session:
-            async with session.get('http://51.15.17.205:9000/tick/Mohamed') as resp:
+            async with session.get('http://51.15.17.205:9000/tick/lebonflo') as resp:
 
                 info = await resp.json()
                 info['timestamp'] = datetime.timestamp(datetime.now())
@@ -72,7 +69,6 @@ async def plot(request):
 
             async with Client(transport=transport, fetch_schema_from_transport=True) as session:
                 symbol = 'BTCUSDT'
-                # Execute single query
                 query = gql(
                     """
                         query {
@@ -88,12 +84,11 @@ async def plot(request):
                 print(result)
                 histprices = result['tickers']
 
-                histpricesdf = pd.DataFrame.from_dict(histprices)
-                # histpricesdf = histpricesdf.rename({'price': symbol}, axis=1)
-                listofdf = []
-                listofdf.append(histpricesdf)
+                histpricesdataf = pd.DataFrame.from_dict(histprices)
+                listofdataf = []
+                listofdataf.append(histpricesdataf)
 
-                dfs = [df.set_index('created_at') for df in listofdf]
+                dfs = [df.set_index('created_at') for df in listofdataf]
                 histpriceconcat = pd.concat(dfs,axis=1)
 
                 print(histpriceconcat)
@@ -103,7 +98,6 @@ async def plot(request):
                     plt.xticks(rotation=70)
                     plt.legend(histpriceconcat.columns)
                     file_path = f"./tick/plots/{symbol}.png"
-                    # Saving the graph into a JPG file
                     plt.savefig(file_path, bbox_inches='tight')
 
             return aiohttp.web.FileResponse(f'./{file_path}')
@@ -118,9 +112,8 @@ async def plot_by_list(request):
             transport = AIOHTTPTransport(url='https://dbschool.alcyone.life/graphql')
 
             async with Client(transport=transport, fetch_schema_from_transport=True) as session:
-                listofdf = []
+                listofdataf = []
                 for symbol in params:
-                    # Execute single query
                     query = gql(
                         """
                             query {
@@ -136,11 +129,11 @@ async def plot_by_list(request):
                     print(result)
                     histprices = result['tickers']
 
-                    histpricesdf = pd.DataFrame.from_dict(histprices)
-                    histpricesdf = histpricesdf.rename({'price': symbol}, axis=1)
-                    listofdf.append(histpricesdf)
+                    histpricesdataf = pd.DataFrame.from_dict(histprices)
+                    histpricesdataf = histpricesdataf.rename({'price': symbol}, axis=1)
+                    listofdataf.append(histpricesdataf)
 
-                dfs = [df.set_index('created_at') for df in listofdf]
+                dfs = [df.set_index('created_at') for df in listofdataf]
                 histpriceconcat = pd.concat(dfs,axis=1)
 
                 print(histpriceconcat)
@@ -151,7 +144,6 @@ async def plot_by_list(request):
                 plt.xticks(rotation=70)
                 plt.legend(histpriceconcat.columns)
                 file_path = f"./tick/plots/{symbol}.png"
-                # Saving the graph into a JPG file
                 plt.savefig(file_path, bbox_inches='tight')
 
             return aiohttp.web.FileResponse(f'./{file_path}')
